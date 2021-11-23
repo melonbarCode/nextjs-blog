@@ -1,7 +1,7 @@
 const siteMetadata = {
-  title: 'Next.js Starter Blog',
+  title: 'IT 지식 저장소 ( Everything that starts with D )',
   author: 'DIALL',
-  headerTitle: 'IT BLOG',
+  headerTitle: 'IT 지식 저장소',
   description: '이것 저것 잡학다식하게 공부합니다.',
   language: 'ko-KR',
   siteUrl: 'https://www.naver.com',
