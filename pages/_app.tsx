@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }: AppProps) {
           from={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           enter={{ opacity: 1, position: 'relative', left: '0' }}
-          leave={{ opacity: 1, position: 'absolute', left: '-100%' }}
+          leave={{ opacity: 1, position: 'absolute', left: '-80%' }}
         >
           {(styles, { pageProps: animatedPageProps, Component: AnimatedComponent, id }) => (
             <animated.div
