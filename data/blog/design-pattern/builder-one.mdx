@@ -1,0 +1,306 @@
+---
+title: '[Design Pattern] Builder'
+date: '2022-02-06'
+lastmod: '2022-02-06'
+tags: ['design pattern', '디자인패턴', 'builder']
+draft: false
+summary: '디자인 패턴 중 Builder 패턴 유형을 다룹니다.'
+images: ['/static/images/design-pattern/pettern.jpg']
+authors: ['default']
+---
+
+![Design Pattern Banner](/static/images/design-pattern/pettern.jpg)
+
+---
+
+# ::rocket:: Design Pattern Builder
+
+Builder 패턴으로 크게 두 가지의 유형으로 나뉜다.
+
+1. 생성시 지정해야할 인자가 많을 경우 사용하는 패턴
+2. 객체 생성 시 여러 단계를 순차적으로 거칠 때, 단계의 순서를 결정하고 각 단계를 구현할 수 있도록 하는 패턴
+
+---
+
+## 생성시 지정해야할 인자가 많을 경우
+
+컴퓨터라는 객체를 만든다고 할 시, 다양한 종류의 컴퓨터를 만들 수 있다.
+이때, 어떤 모델은 기본으로 가지고 있는 옵션이 있고, 어떤 옵션을 없을 것이다.
+이런 번거로운 과정을 단순화 시킨 게 해당 패턴이라고 볼 수 있다.
+
+`Computer.ts`
+
+```typescript
+export default class Computer {
+  private hasGraphicCard: boolean
+  private hasMonitor: boolean
+  private hasTouchScreen: boolean
+  private hasCamera: boolean
+  private name: string
+  private color: string
+
+  constructor(
+    name: string,
+    color: string,
+    hasCamera: boolean,
+    hasTouchScreen: boolean,
+    hasMonitor: boolean,
+    hasGraphicCard: boolean
+  ) {
+    this.name = name
+    this.color = color
+    this.hasCamera = hasCamera
+    this.hasTouchScreen = hasTouchScreen
+    this.hasMonitor = hasMonitor
+    this.hasGraphicCard = hasGraphicCard
+  }
+
+  toString() {
+    return `
+        COMPUTER INFORMATION 
+
+        name : ${this.name}
+        color : ${this.color}
+        hasCamera : ${this.hasCamera}
+        hasTouchScreen : ${this.hasTouchScreen}
+        hasMonitor : ${this.hasMonitor}
+        hasGraphicCard : ${this.hasGraphicCard}
+    
+    `
+  }
+}
+```
+
+`ComputerBuilder.ts`
+
+```typescript
+export default class ComputerBuilder {
+  private hasGraphicCard: boolean
+  private hasMonitor: boolean
+  private hasTouchScreen: boolean
+  private hasCamera: boolean
+  private name: string
+  private color: string
+
+  constructor() {
+    this.hasGraphicCard = false
+    this.hasMonitor = false
+    this.hasTouchScreen = false
+    this.hasCamera = false
+    this.name = '무제'
+    this.color = 'black'
+  }
+
+  setHasGraphicCard(hasGraphicCard: boolean) {
+    this.hasGraphicCard = hasGraphicCard
+    return this
+  }
+
+  setHasMonitor(hasMonitor: boolean) {
+    this.hasMonitor = hasMonitor
+    return this
+  }
+
+  setHasTouchScreen(hasTouchScreen: boolean) {
+    this.hasTouchScreen = hasTouchScreen
+    return this
+  }
+
+  setHasCamera(hasCamera: boolean) {
+    this.hasCamera = hasCamera
+    return this
+  }
+
+  setName(name: string) {
+    this.name = name
+    return this
+  }
+
+  setColor(color: string) {
+    this.color = color
+    return this
+  }
+
+  build(): Computer {
+    const { name, color, hasCamera, hasTouchScreen, hasMonitor, hasGraphicCard } = this
+
+    const computer = new Computer(
+      name,
+      color,
+      hasCamera,
+      hasTouchScreen,
+      hasMonitor,
+      hasGraphicCard
+    )
+
+    return computer
+  }
+}
+```
+
+`main.ts`
+
+```typescript
+function main() {
+  const builder: ComputerBuilder = new ComputerBuilder()
+
+  builder
+    .setName('SAMSUNG COMPUTER')
+    .setColor('RED')
+    .setHasCamera(true)
+    .setHasGraphicCard(true)
+    .setHasMonitor(true)
+    .setHasTouchScreen(true)
+
+  //BUILDER 클래스로 미리 생성자 셋팅을 준비해 놓은 다음 자신이 원할 떄 build 메서드를 호출하여 Computer class 객체를 생성할 수 있음.
+
+  const computer = builder.build()
+
+  console.log(computer)
+}
+
+main()
+```
+
+## 객체 생성 시 여러 단계를 순차적으로 거칠 때, 단계의 순서를 결정하고 각 단계를 구현할 수 있도록 하는 패턴
+
+어느정도 정보가 정해져 있으며 다양한 방식으로 규격화가 되어 있을 떄, 이런 패턴을 사용하면 좋다.
+예를 들어서 특정 javascript 객체의 정보를 다양한 텍스트 포맷을 지원해야 할 시 해당 패턴을 사용하면 좋다.
+데이터의 builder에 대한 build 메서드의 권한은 Director class가 갖는다.
+
+`TextData.ts`
+
+```typescript
+export default class TextData {
+  private name: string
+  private age: number
+
+  constructor(name: string, age: number) {
+    this.name = name
+    this.age = age
+  }
+
+  getName() {
+    return this.name
+  }
+
+  getAge() {
+    return this.age
+  }
+}
+```
+
+`TextBuilder.ts`
+
+```typescript
+//##다양한 규격을 생성하기 위한 추상 클래스
+export default abstract class TextBuilder {
+  protected data: TextData
+
+  constructor(data: TextData) {
+    this.data = data
+  }
+
+  abstract head(): string
+  abstract body(): string
+  abstract footer(): string
+}
+```
+
+`PlainTextBuilder.ts`
+
+```typescript
+//TextBuilder를 상속 받아 해당 추상 클래스를 구현합니다.  (단순 텍스트 형태로 구현)
+export default class PlainTextBuilder extends TextBuilder {
+  constructor(data: TextData) {
+    super(data)
+  }
+
+  head(): string {
+    return ''
+  }
+
+  body(): string {
+    return `name: ${this.data.getName()}, age: ${this.data.getAge()}`
+  }
+
+  footer(): string {
+    return ''
+  }
+}
+```
+
+`JSONBuilder.ts`
+
+```typescript
+//TextBuilder를 상속 받아 해당 추상 클래스를 구현합니다. (JSON 형태로 구현)
+export default class JSONBuilder extends TextBuilder {
+  constructor(data: TextData) {
+    super(data)
+  }
+
+  head(): string {
+    return '{'
+  }
+
+  body(): string {
+    return `"name": "${this.data.getName()}", "age": "${this.data.getAge()}"`
+  }
+
+  footer(): string {
+    return '}'
+  }
+}
+```
+
+`Director.ts`
+
+```typescript
+//인스턴스 생성시 BUILDER를 인자로 받아 이를 구현된 빌더를 사용하는 클래스 입니다.
+export default class Director {
+  private builder: TextBuilder
+
+  constructor(builder: TextBuilder) {
+    this.builder = builder
+  }
+
+  setBuilder(builder: TextBuilder) {
+    this.builder = builder
+    return this
+  }
+
+  public build(): string {
+    return this.builder.head() + this.builder.body() + this.builder.footer()
+  }
+}
+```
+
+`main.ts`
+
+```typescript
+function main() {
+  const personTextData = new TextData('diall', 31)
+
+  const plaintextBuilder = new PlainTextBuilder(personTextData)
+  const jsonBuilder = new JSONBuilder(personTextData)
+
+  const director = new Director(plaintextBuilder)
+  console.log(director.build())
+  console.log(director.setBuilder(jsonBuilder).build())
+  console.log(director.setBuilder(xmlBuilder).build())
+}
+
+main()
+
+/*
+    console output
+
+    name: diall, age: 31
+    {"name": "diall", "age": "31"}
+
+*/
+```
+
+## 참조 영상
+
+[GIS Developer Youtube](https://www.youtube.com/channel/UCgaxgVio7J9JgZrONkwiSEQ/featured)

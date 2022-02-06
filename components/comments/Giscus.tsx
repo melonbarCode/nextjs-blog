@@ -29,6 +29,7 @@ const Giscus = ({ mapping }: Props) => {
     script.setAttribute('data-category-id', siteMetadata.comment.giscusConfig.categoryId)
     script.setAttribute('data-mapping', mapping)
     script.setAttribute('data-reactions-enabled', siteMetadata.comment.giscusConfig.reactions)
+    script.setAttribute('data-input-position', siteMetadata.comment.giscusConfig.inputPosition)
     script.setAttribute('data-emit-metadata', siteMetadata.comment.giscusConfig.metadata)
     script.setAttribute('data-theme', commentsTheme)
     script.setAttribute('crossorigin', 'anonymous')

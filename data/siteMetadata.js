@@ -1,16 +1,16 @@
 const siteMetadata = {
-  title: 'IT 지식 저장소 ( Everything that starts with D )',
-  author: 'DIALL',
-  headerTitle: 'IT 지식 저장소',
+  title: `melonbarcode's dev site`,
+  author: 'melonbarcode',
+  headerTitle: `melonbarcode`,
   description: '이것 저것 잡학다식하게 공부합니다.',
   language: 'ko-KR',
-  siteUrl: 'https://www.naver.com',
-  siteRepo: 'https://www.naver.com',
+  siteUrl: 'https://github.com/melonbarCode',
+  siteRepo: 'https://github.com/melonbarCode',
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
   socialBanner: '/static/images/twitter-card.png',
   email: 'melonbarcode@gmail.com',
-  github: 'https://github.com',
+  github: 'https://github.com/melonbarCode',
   twitter: 'https://twitter.com/Twitter',
   facebook: 'https://facebook.com',
   youtube: 'https://youtube.com',
@@ -25,7 +25,7 @@ const siteMetadata = {
   newsletter: {
     // supports mailchimp, buttondown, convertkit
     // Please add your .env file and modify it according to your selection
-    provider: 'buttondown',
+    provider: '',
   },
   comment: {
     // Select a provider and use the environment variables associated to it
@@ -41,7 +41,9 @@ const siteMetadata = {
       mapping: 'pathname', // supported options: pathname, url, title
       reactions: '1', // Emoji reactions: 1 = enable / 0 = disable
       // Send discussion metadata periodically to the parent window: 1 = enable / 0 = disable
-      metadata: '0',
+      metadata: '1',
+      inputPosition: 'top',
+      lang: 'ko',
       // theme example: light, dark, dark_dimmed, dark_high_contrast
       // transparent_dark, preferred_color_scheme, custom
       theme: 'light',

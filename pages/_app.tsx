@@ -1,7 +1,6 @@
 import '@/css/tailwind.css'
 import '@/css/prism.css'
 import '@/css/animation.css'
-
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
@@ -38,7 +37,7 @@ export default function App({ Component, pageProps }: AppProps) {
           from={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           enter={{ opacity: 1, position: 'relative', left: '0' }}
-          leave={{ opacity: 1, position: 'absolute', left: '-80%' }}
+          leave={{ opacity: 0, position: 'absolute', left: '-100%' }}
         >
           {(styles, { pageProps: animatedPageProps, Component: AnimatedComponent, id }) => (
             <animated.div
