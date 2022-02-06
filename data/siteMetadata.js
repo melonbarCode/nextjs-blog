@@ -4,7 +4,7 @@ const siteMetadata = {
   headerTitle: `melonbarcode`,
   description: '이것 저것 잡학다식하게 공부합니다.',
   language: 'ko-KR',
-  siteUrl: 'https://github.com/melonbarCode',
+  siteUrl: 'https://melonbarcode.vercel.app',
   siteRepo: 'https://github.com/melonbarCode/nextjs-blog',
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
