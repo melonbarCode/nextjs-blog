@@ -5,7 +5,7 @@ const siteMetadata = {
   description: '이것 저것 잡학다식하게 공부합니다.',
   language: 'ko-KR',
   siteUrl: 'https://github.com/melonbarCode',
-  siteRepo: 'https://github.com/melonbarCode',
+  siteRepo: 'https://github.com/melonbarCode/nextjs-blog',
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
   socialBanner: '/static/images/twitter-card.png',
