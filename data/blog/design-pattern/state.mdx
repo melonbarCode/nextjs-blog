@@ -1,0 +1,364 @@
+---
+title: '[Design Pattern] State'
+date: '2022-02-06'
+lastmod: '2022-02-06'
+tags: ['design pattern', '디자인패턴', 'state']
+draft: false
+summary: '디자인 패턴 중 State 패턴 유형을 다룹니다.'
+images: ['/static/images/design-pattern/pettern.jpg']
+authors: ['default']
+---
+
+![Design Pattern Banner](/static/images/design-pattern/pettern.jpg)
+
+---
+
+# Design Pattern State
+
+어떤 상태를 클래스로 표현해서 객체화를 한 패턴입니다.
+
+많은 상태가 있고 각 상태마다 처리를 해야한다면
+
+각 상태를 비교하는 if 조건문을 많이 작성하게 된다.
+
+이런 많은 상태에 대한 if 조건문은 서로 다른 if 조건문에 영향을 주게 되면서
+
+코드에 영향을 주게 되는데 이는 코드를 매우 복잡하게 만들고 코드의 가독성을 떨어지게 만듭니다.
+
+이런 복잡한 조건들을 State Pattern으로 처리하게 되면 코드를 깔끔하게 이를 처리할 수 있게 된다,
+
+---
+
+## 각각의 상태에 따라 서로 상태 조건이 영향을 미칠 경우
+
+`1. Player`
+
+```typescript
+export default class Player {
+  private speed: number
+  private state: State
+
+  constructor() {
+    this.speed = 0
+    this.state = new StandUpState(this)
+  }
+
+  setSpeed(speed: number) {
+    this.speed = speed
+  }
+
+  getSpeed() {
+    return this.speed
+  }
+
+  setState(state: State) {
+    this.state = state
+  }
+
+  getState() {
+    return this.state
+  }
+
+  talk(text: string) {
+    console.log(`Player says : ${text}`)
+  }
+}
+```
+
+`2. State`
+
+```typescript
+export default abstract class State {
+  protected player: Player
+
+  constructor(player: Player) {
+    this.player = player
+  }
+
+  abstract standUp(): void
+  abstract sitDown(): void
+  abstract walk(): void
+  abstract run(): void
+  abstract getDescription(): string
+}
+```
+
+`3. StandUpState`
+
+```typescript
+export default class StandUpState extends State {
+  constructor(player: Player) {
+    super(player)
+  }
+
+  standUp() {
+    this.player.talk('이미 일어난 상태인데요?')
+  }
+
+  sitDown() {
+    this.player.talk('힘든데 앉아 있어볼까?')
+    this.player.setState(new SitDownState(this.player))
+  }
+  walk() {
+    this.player.talk('슬슬 걸어보자')
+    this.player.setSpeed(WalkState.DEFAULT_SPEED)
+    this.player.setState(new WalkState(this.player))
+  }
+  run() {
+    this.player.talk('힘들지만 바로 뛰자')
+    this.player.setSpeed(RunState.DEFAULT_SPEED)
+    this.player.setState(new RunState(this.player))
+  }
+
+  getDescription() {
+    return '서 있음'
+  }
+}
+```
+
+`4. SitDownState`
+
+```typescript
+export default class SitDownState extends State {
+  constructor(player: Player) {
+    super(player)
+  }
+
+  standUp() {
+    this.player.talk('슬슬 일어나보자?')
+    this.player.setState(new StandUpState(this.player))
+  }
+
+  sitDown() {
+    this.player.talk('이미 앉아 있어요')
+  }
+
+  walk() {
+    this.player.talk('앉아 있는 상태라 못걸어요 : 일어 날게요')
+    this.player.setState(new StandUpState(this.player))
+  }
+
+  run() {
+    this.player.talk('앉아 있는 상태라 못 뛰어요: 우선 일어 날게요')
+    this.player.setState(new StandUpState(this.player))
+  }
+
+  getDescription() {
+    return '앉아 있음'
+  }
+}
+```
+
+`5. RunState`
+
+```typescript
+export default class RunState extends State {
+  static DEFAULT_SPEED: number = 20
+  static MAX_SPEED: number = 24
+
+  constructor(player: Player) {
+    super(player)
+  }
+
+  standUp() {
+    this.player.talk('바로 멈추면 위험해요. 천천히 걷을게요 우선')
+    this.player.setState(new WalkState(this.player))
+  }
+
+  sitDown() {
+    this.player.talk('뛰고 있는데 어떻게 앉아요 이사람아')
+  }
+
+  walk() {
+    this.player.talk('힘들다 잠시만 걷자')
+    this.player.setSpeed(WalkState.DEFAULT_SPEED)
+    this.player.setState(new WalkState(this.player))
+  }
+
+  run() {
+    const currentSpeed = this.player.getSpeed()
+
+    if (currentSpeed > RunState.MAX_SPEED) {
+      this.player.talk('이제 그만 더는 못뛰어요. 걸을게요')
+      this.player.setSpeed(WalkState.DEFAULT_SPEED)
+      this.player.setState(new WalkState(this.player))
+      return
+    }
+
+    this.player.talk('속도를 올려보자')
+    this.player.setSpeed(this.player.getSpeed() + 2)
+  }
+
+  getDescription() {
+    return '뛰고 있어요'
+  }
+}
+```
+
+`6. WalkState`
+
+```typescript
+export default class WalkState extends State {
+  static DEFAULT_SPEED: number = 5
+
+  constructor(player: Player) {
+    super(player)
+  }
+
+  standUp() {
+    this.player.talk('잠시 서있자')
+    this.player.setState(new StandUpState(this.player))
+  }
+
+  sitDown() {
+    this.player.talk('걷는 중인데 앉으라고 하면 위험해요: 앉을게요')
+    this.player.setState(new SitDownState(this.player))
+  }
+  walk() {
+    this.player.talk('이미 걷고 있어요')
+  }
+  run() {
+    this.player.talk('충분히 걸었으니, 슬슬 뛰어볼까요')
+    this.player.setSpeed(RunState.DEFAULT_SPEED)
+    this.player.setState(new RunState(this.player))
+  }
+
+  getDescription() {
+    return '걷고 있음'
+  }
+}
+```
+
+`main`
+
+```typescript
+import * as readline from 'node:readline'
+import { stdin as input, stdout as output } from 'node:process'
+import Player from './Player'
+
+input.resume()
+input.setEncoding('utf-8')
+
+const rl = readline.createInterface({ input, output })
+
+function main() {
+  const player = new Player()
+
+  function recurcive() {
+    rl.question(
+      `player의 상태: ${player.getState().getDescription()}, 속도 ${player.getSpeed()} m/s
+      
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+      
+      `,
+
+      function (answer) {
+        switch (answer.trim()) {
+          case '1':
+            player.getState().sitDown()
+            break
+          case '2':
+            player.getState().standUp()
+            break
+          case '3':
+            player.getState().walk()
+            break
+          case '4':
+            player.getState().run()
+            break
+          case '5':
+            console.log('프로그램 종료')
+            return rl.close()
+          default:
+            console.log('해당 기능은 없어요`' + answer.trim() + '`')
+            break
+        }
+
+        recurcive()
+      }
+    )
+  }
+
+  recurcive()
+}
+
+main()
+```
+
+`(output)`
+
+```shell
+
+    player의 상태: 서 있음, 속도 0 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      1
+Player says : 힘든데 앉아 있어볼까?
+player의 상태: 앉아 있음, 속도 0 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      1
+Player says : 이미 앉아 있어요
+player의 상태: 앉아 있음, 속도 0 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      2
+Player says : 슬슬 일어나보자?
+player의 상태: 서 있음, 속도 0 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      2
+Player says : 이미 일어난 상태인데요?
+player의 상태: 서 있음, 속도 0 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      3
+Player says : 슬슬 걸어보자
+player의 상태: 걷고 있음, 속도 5 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      3
+Player says : 이미 걷고 있어요
+player의 상태: 걷고 있음, 속도 5 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      4
+Player says : 충분히 걸었으니, 슬슬 뛰어볼까요
+player의 상태: 뛰고 있어요, 속도 20 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      4
+Player says : 속도를 올려보자
+player의 상태: 뛰고 있어요, 속도 22 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      4
+Player says : 속도를 올려보자
+player의 상태: 뛰고 있어요, 속도 24 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      4
+Player says : 속도를 올려보자
+player의 상태: 뛰고 있어요, 속도 26 m/s
+
+      [1] 앉기 [2] 서기 [3] 걷기 [4] 달리기 [5] 종료
+
+      4
+Player says : 이제 그만 더는 못뛰어요. 걸을게요
+player의 상태: 걷고 있음, 속도 5 m/s
+
+```
+
+## 참조 영상
+
+[GIS Developer Youtube](https://www.youtube.com/channel/UCgaxgVio7J9JgZrONkwiSEQ/featured)
