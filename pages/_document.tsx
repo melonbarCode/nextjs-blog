@@ -41,6 +41,7 @@ class MyDocument extends Document {
             integrity="sha384-Um5gpz1odJg5Z4HAmzPtgZKdTBHZdw8S29IecapCSB31ligYPhHQZMIlWLYQGVoc"
             crossOrigin="anonymous"
           />
+          <meta name="google-adsense-account" content="ca-pub-6219881035240296"></meta>
         </Head>
         <body className="antialiased text-black bg-white dark:bg-gray-900 dark:text-white transition-colors overflow-scroll">
           <Main />
